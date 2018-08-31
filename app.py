@@ -21,7 +21,7 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
-        if not auth:
+        if not auth: 
             return authenticate()
 
         elif not check_auth(auth.username, auth.password):
@@ -31,11 +31,12 @@ def requires_auth(f):
     return decorated
 
 
-
-arduino = serial.Serial('/dev/ttyACM0',9600,timeout=1)
+arduino = serial.Serial('COM4',9600,timeout=1)
+#arduino = serial.Serial('/dev/ttyACM0',9600,timeout=1)
 time.sleep(4)
 init = arduino.readline()
 print(init)
+
 # Port série ttyACM0
 # Vitesse de baud : 9600
 # Timeout en lecture : 1 sec
@@ -49,14 +50,13 @@ def api_message():
     if request.method == 'GET':
         if 'temperature' in request.args:
             function=chr(123)+chr(34)+'function_name'+chr(34)+':'+chr(34)+'temperature'+chr(34)+chr(125)+chr(37)
-
+           
         elif 'lumiere' in request.args:
             function=chr(123)+chr(34)+'function_name'+chr(34)+':'+chr(34)+'lumiere'+chr(34)+chr(125)+chr(37)
-
+           
         else:
             return "400 Unsupported function"+"\n"
-
-
+        
         arduino.write(function.encode('utf-8'))
         print(function)
         time.sleep(1)
@@ -68,7 +68,7 @@ def api_message():
     elif request.method == 'POST':
         if 'code' in request.args:
 
-            function=chr(123)+chr(34)+'function_name'+chr(34)+':'+chr(34)+'SendRadioCode'+chr(34)+','+chr(34)+'code'+chr(34)+':'+chr(34)+request.args['code'] +chr(34)+$
+            function=chr(123)+chr(34)+'function_name'+chr(34)+':'+chr(34)+'SendRadioCode'+chr(34)+','+chr(34)+'code'+chr(34)+':'+chr(34)+request.args['code'] +chr(34)+chr(125)+chr(37)
 
             arduino.write(function.encode('utf-8'))
 
@@ -77,7 +77,7 @@ def api_message():
             time.sleep(2)
             donnee=str(arduino.readline())
             print(donnee)
-       return "ECHO: " + donnee+"\n"
+        return "ECHO: " + donnee+"\n"
 
     else:
         return "415 Unsupported Media Type ;)"+"\n"
@@ -90,6 +90,4 @@ def api_message():
 #def get_tasks():
 #      return jsonify({'tasks': tasks})
 if __name__ == '__main__':
-         app.run(host='0.0.0.0')
-
-
+         app.run(host='localhost')
